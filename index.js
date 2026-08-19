@@ -16,8 +16,16 @@ const {
 } = require("@aws-sdk/client-ecr");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
-const { startGroup, getInput, info, setOutput, warning, setFailed, endGroup } =
-  core;
+const {
+  startGroup,
+  getInput,
+  getBooleanInput,
+  info,
+  setOutput,
+  warning,
+  setFailed,
+  endGroup,
+} = core;
 const { context } = github;
 
 const craneVersion = "0.13.0";
@@ -53,8 +61,16 @@ async function uploadArtifacts(artifactsBucket, files) {
     fs.readFile(`./${file}`, "utf8", function (err, contents) {
       if (err) {
         if (err.code === "ENOENT") {
-          // this is a buildpack artifact which we don't expect BYOB to upload
-          if (file !== "metadata.toml") {
+          if (file === "build.log") {
+            // build.log is optional. Without it, the deploy still succeeds --
+            // build data just won't be viewable in the AppPack dashboard.
+            if (!getBooleanInput("suppress-build-log-warning")) {
+              warning(
+                "build.log does not exist. This is safe to ignore, but build data will not be viewable in the AppPack dashboard. Set the suppress-build-log-warning input to silence this warning."
+              );
+            }
+          } else if (file !== "metadata.toml") {
+            // this is a buildpack artifact which we don't expect BYOB to upload
             warning(
               `${file} does not exist. It must be uploaded to S3 for a deploy to succeed.`
             );

@@ -23,6 +23,12 @@ Your build process is responsible for generating these files (with the exception
 
 **Required** Name of local Docker image to deploy
 
+### `suppress-build-log-warning`
+
+**Optional** Set to `true` to suppress the warning emitted when `build.log`
+does not exist. A missing `build.log` is safe to ignore, but build data will
+not be viewable in the AppPack dashboard. Defaults to `false`.
+
 ## Outputs
 
 ### `build_number`

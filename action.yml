@@ -10,11 +10,18 @@ inputs:
   image:
     description: Docker image to deploy
     required: true
+  suppress-build-log-warning:
+    description: >-
+      Suppress the warning emitted when build.log does not exist. A missing
+      build.log is safe to ignore, but build data will not be viewable in the
+      AppPack dashboard.
+    required: false
+    default: "false"
 outputs:
   build_number:
     description: CodeBuild build number of deploy
   build_arn:
     description: CodeBuild build ARN of deploy
 runs:
-  using: node16
+  using: node24
   main: index.js
